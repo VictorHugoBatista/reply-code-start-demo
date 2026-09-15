@@ -20,27 +20,31 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
         run: |
+          cd "$GITHUB_WORKSPACE"
           gh repo clone VictorHugoBatista/reply-code-finish-demo target-repo
-          cd target-repo
+      
+      - name: Sync, clean and push
+        env:
+          GH_TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
+        run: |
+          cd "$GITHUB_WORKSPACE/target-repo"
+          
+          # Configura git
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout main 2>/dev/null || git checkout -b main
-      
-      - name: Sync content
-        run: |
-          rsync -av --exclude='.git' --exclude='.github' ./ target-repo/
-          cd target-repo
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Sync: copia arquivos do source (exceto .git e .github)
+          rsync -av --exclude='.git' --exclude='.github' --exclude='target-repo' "$GITHUB_WORKSPACE/" .
+          
+          # Remove documentação
           rm -rf docs/ documentation/ *.md 2>/dev/null || true
+          
+          # Commit sync
           git add -A
-          git commit -m "Sync: $(date '+%Y-%m-%d %H:%M:%S') [skip ci]" || echo "No changes"
-      
-      - name: Remove AI comments
-        run: |
-          cd target-repo
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -m "Sync: $(date '+%Y-%m-%d %H:%M:%S')" || echo "No changes to sync"
+          
+          # Remove AI comments
           python3 << 'EOF'
           import re, os
           from pathlib import Path
@@ -72,15 +76,14 @@ jobs:
                       except: pass
           EOF
           
+          # Commit AI cleanup
           git add -A
-          git commit -m "Remove AI comments [skip ci]" || echo "No changes"
-      
-      - name: Push to target
-        env:
-          GH_TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
-        run: |
-          cd target-repo
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -m "Remove AI comments" || echo "No AI comments to remove"
+          
+          # Push
+          echo "=== Final state ==="
+          git log --oneline -5
+          git status
+          
           git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/VictorHugoBatista/reply-code-finish-demo.git
-         
+          git push origin main --verbose
