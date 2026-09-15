@@ -16,33 +16,31 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-      
       - name: Clone target repo
         env:
           GH_TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
         run: |
           gh repo clone VictorHugoBatista/reply-code-finish-demo target-repo
+          cd target-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout main 2>/dev/null || git checkout -b main
       
       - name: Sync content
         run: |
-          # Copia arquivos do start para o finish (exceto .git)
           rsync -av --exclude='.git' --exclude='.github' ./ target-repo/
-          
           cd target-repo
-          
-          # Remove documentação
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           rm -rf docs/ documentation/ *.md 2>/dev/null || true
-          
           git add -A
           git commit -m "Sync: $(date '+%Y-%m-%d %H:%M:%S') [skip ci]" || echo "No changes"
       
       - name: Remove AI comments
         run: |
           cd target-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           python3 << 'EOF'
           import re, os
           from pathlib import Path
@@ -82,7 +80,7 @@ jobs:
           GH_TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
         run: |
           cd target-repo
-          # Configura o remote com autenticação
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/VictorHugoBatista/reply-code-finish-demo.git
-          git branch -M main
-          git push -u origin main
+         
