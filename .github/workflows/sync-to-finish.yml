@@ -82,4 +82,7 @@ jobs:
           GH_TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
         run: |
           cd target-repo
-          git push
+          # Configura o remote com autenticação
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/VictorHugoBatista/reply-code-finish-demo.git
+          git branch -M main
+          git push -u origin main
