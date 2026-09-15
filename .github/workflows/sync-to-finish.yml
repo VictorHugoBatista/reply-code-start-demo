@@ -20,7 +20,13 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-      
+
+      - name: Debug authentication
+        run: |
+          echo "Testing token..."
+          curl -H "Authorization: token ${{ secrets.TARGET_REPO_TOKEN }}" \
+               https://api.github.com/repos/VictorHugoBatista/reply-code-finish-demo
+
       - name: Add Finish Demo as remote
         run: |
           git remote add target https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/VictorHugoBatista/reply-code-finish-demo.git
