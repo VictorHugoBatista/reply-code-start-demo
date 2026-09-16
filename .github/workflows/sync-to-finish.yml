@@ -35,10 +35,11 @@ jobs:
           git checkout main 2>/dev/null || git checkout -b main
           
           # Sync: copia arquivos do source (exceto .git e .github)
-          rsync -av --exclude='.git' --exclude='.github' --exclude='target-repo' "$GITHUB_WORKSPACE/" .
+          rsync -av --exclude='.git' --exclude='.github' --exclude='README.md' --exclude='target-repo' "$GITHUB_WORKSPACE/" .
           
-          # Remove documentação
-          rm -rf docs/ documentation/ *.md 2>/dev/null || true
+          # Remove documentação (preserva README)
+          rm -rf docs/ documentation/ 2>/dev/null || true
+          find . -maxdepth 1 -iname '*.md' ! -iname 'README.md' -delete 2>/dev/null || true
           
           # Commit sync
           git add -A
