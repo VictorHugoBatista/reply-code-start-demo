@@ -24,6 +24,12 @@ from pathlib import Path
 
 TASKS_FILE = Path("todo.json") # Need a file called todo.json on the project root
 
+def print_todo_banner():
+    """Print a simple ASCII TODO banner."""
+    print("  ┏━━━━┓")
+    print("  ┃TODO┃")
+    print("  ┗━━━━┛")
+
 def load_tasks():
     """Load tasks from todo.json, return empty list if file doesn't exist."""
     if TASKS_FILE.exists():
@@ -36,6 +42,7 @@ def save_tasks(tasks):
 
 def add_task(text):
     """Add a new task with given text."""
+    print_todo_banner()
     tasks = load_tasks()
     tasks.append({"text": text, "done": False})
     save_tasks(tasks)
@@ -43,6 +50,7 @@ def add_task(text):
 
 def list_tasks():
     """Print all tasks with index and done status."""
+    print_todo_banner()
     tasks = load_tasks()
     if not tasks:
         print("No tasks.")
@@ -53,6 +61,7 @@ def list_tasks():
 
 def mark_done(index):
     """Mark task at given index as complete."""
+    print_todo_banner()
     tasks = load_tasks()
     if 0 <= index < len(tasks):
         tasks[index]["done"] = True
@@ -63,6 +72,7 @@ def mark_done(index):
 
 def remove_task(index):
     """Remove task at given index."""
+    print_todo_banner()
     tasks = load_tasks()
     if 0 <= index < len(tasks):
         removed = tasks.pop(index)
@@ -73,6 +83,7 @@ def remove_task(index):
 
 def edit_task(index, new_text):
     """Edit task at given index with new text."""
+    print_todo_banner()
     tasks = load_tasks()
     if 0 <= index < len(tasks):
         old_text = tasks[index]["text"]
@@ -84,6 +95,7 @@ def edit_task(index, new_text):
 
 def duplicate_task(index):
     """Duplicate task at given index."""
+    print_todo_banner()
     tasks = load_tasks()
     if 0 <= index < len(tasks):
         original = tasks[index]
@@ -96,11 +108,13 @@ def duplicate_task(index):
 
 def export_tasks():
     """Export all tasks as JSON."""
+    print_todo_banner()
     tasks = load_tasks()
     print(json.dumps(tasks, indent=2))
 
 def export_csv():
     """Export all tasks to CSV with text and status columns."""
+    print_todo_banner()
     tasks = load_tasks()
     output = csv.StringIO()
     writer = csv.writer(output)
