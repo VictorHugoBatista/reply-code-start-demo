@@ -19,6 +19,21 @@ Mark a task as done (by index):
 python todo.py done 0
 ```
 
+Edit a task (by index):
+```bash
+python todo.py edit 0 "buy organic milk"
+```
+
+Duplicate a task (by index):
+```bash
+python todo.py duplicate 0
+```
+
+Remove a task (by index):
+```bash
+python todo.py remove 0
+```
+
 Run self-check:
 ```bash
 python todo.py test

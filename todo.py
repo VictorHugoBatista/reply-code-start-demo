@@ -70,10 +70,33 @@ def remove_task(index):
     else:
         print(f"Invalid task index: {index}")
 
+def edit_task(index, new_text):
+    """Edit task at given index with new text."""
+    tasks = load_tasks()
+    if 0 <= index < len(tasks):
+        old_text = tasks[index]["text"]
+        tasks[index]["text"] = new_text
+        save_tasks(tasks)
+        print(f"Updated: '{old_text}' -> '{new_text}'")
+    else:
+        print(f"Invalid task index: {index}")
+
+def duplicate_task(index):
+    """Duplicate task at given index."""
+    tasks = load_tasks()
+    if 0 <= index < len(tasks):
+        original = tasks[index]
+        new_task = {"text": original["text"], "done": False}
+        tasks.insert(index + 1, new_task)
+        save_tasks(tasks)
+        print(f"Duplicated: '{original['text']}'")
+    else:
+        print(f"Invalid task index: {index}")
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python todo.py [add|list|done|remove|test]")
+        print("Usage: python todo.py [add|list|done|remove|edit|duplicate|test]")
         sys.exit(1)
 
     cmd = sys.argv[1]
@@ -86,6 +109,10 @@ if __name__ == "__main__":
         mark_done(int(sys.argv[2]))
     elif cmd == "remove" and len(sys.argv) > 2:
         remove_task(int(sys.argv[2]))
+    elif cmd == "edit" and len(sys.argv) > 3:
+        edit_task(int(sys.argv[2]), " ".join(sys.argv[3:]))
+    elif cmd == "duplicate" and len(sys.argv) > 2:
+        duplicate_task(int(sys.argv[2]))
     elif cmd == "test":
         from test_todo import demo
         demo()
