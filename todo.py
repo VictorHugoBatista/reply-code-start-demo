@@ -70,33 +70,6 @@ def remove_task(index):
     else:
         print(f"Invalid task index: {index}")
 
-def demo():
-    """Run self-check: add, list, mark done, and remove tasks."""
-    if TASKS_FILE.exists():
-        TASKS_FILE.unlink()
-
-    # Crestes tasks for test
-    add_task("test task 1")
-    add_task("test task 2")
-    add_task("test task 3")
-    list_tasks()
-
-    # Mark one task done
-    mark_done(0)
-    list_tasks()
-
-    # Remove one task
-    remove_task(1)
-    list_tasks()
-
-    # General assertions
-    tasks = load_tasks()
-    assert tasks[0]["done"] == True
-    assert tasks[0]["text"] == "test task 1"
-    assert tasks[1]["text"] == "test task 3"
-    assert len(tasks) == 2
-    TASKS_FILE.unlink()
-    print("Self-check passed.")
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -114,6 +87,7 @@ if __name__ == "__main__":
     elif cmd == "remove" and len(sys.argv) > 2:
         remove_task(int(sys.argv[2]))
     elif cmd == "test":
+        from test_todo import demo
         demo()
     else:
         print("Unknown command or missing arguments.")
