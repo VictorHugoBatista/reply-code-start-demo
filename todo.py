@@ -74,14 +74,22 @@ def demo():
     """Run self-check: add, list, mark done, and remove tasks."""
     if TASKS_FILE.exists():
         TASKS_FILE.unlink()
+
+    # Crestes tasks for test
     add_task("test task 1")
     add_task("test task 2")
     add_task("test task 3")
     list_tasks()
+
+    # Mark one task done
     mark_done(0)
     list_tasks()
+
+    # Remove one task
     remove_task(1)
     list_tasks()
+
+    # General assertions
     tasks = load_tasks()
     assert tasks[0]["done"] == True
     assert tasks[0]["text"] == "test task 1"
