@@ -56,16 +56,28 @@ jobs:
           # Remove all comments
           python3 << 'EOF'
           import re, os
+          import runpy
           from pathlib import Path
 
+          remove_comments = runpy.run_path(
+              str(Path(os.environ['GITHUB_WORKSPACE']) / 'bin' / 'strip_comments.py')
+          )['remove_comments']
+
           C_LIKE = {'.js', '.ts', '.jsx', '.tsx', '.java', '.c', '.cpp', '.go', '.php'}
-          PYTHON_LIKE = {'.py', '.rb'}
 
           for root, dirs, files in os.walk('.'):
               dirs[:] = [d for d in dirs if d not in {'.git', 'node_modules'}]
               for f in files:
                   fp = Path(root) / f
-                  if fp.suffix not in C_LIKE and fp.suffix not in PYTHON_LIKE:
+                  if fp.suffix not in C_LIKE | {'.py', '.rb'}:
+                      continue
+                  if fp.suffix == '.py':
+                      content = fp.read_text(encoding='utf-8')
+                      cleaned = remove_comments(content)
+                      compile(cleaned, str(fp), 'exec')
+                      if cleaned != content:
+                          fp.write_text(cleaned, encoding='utf-8')
+                          print(f"Cleaned: {fp}")
                       continue
                   try:
                       content = fp.read_text()
@@ -76,7 +88,7 @@ jobs:
                           cleaned = re.sub(r'//.*?$', '', cleaned, flags=re.MULTILINE)
                           cleaned = re.sub(r'^[ \t]*/\*.*?\*/[ \t]*\n', '', cleaned, flags=re.MULTILINE | re.DOTALL)
                           cleaned = re.sub(r'/\*.*?\*/', '', cleaned, flags=re.DOTALL)
-                      elif fp.suffix in PYTHON_LIKE:
+                      elif fp.suffix == '.rb':
                           cleaned = re.sub(r'^[ \t]*#.*$\n', '', cleaned, flags=re.MULTILINE)
                           cleaned = re.sub(r'#.*?$', '', cleaned, flags=re.MULTILINE)
                           cleaned = re.sub(r'^[ \t]*""".*?"""[ \t]*\n', '', cleaned, flags=re.MULTILINE | re.DOTALL)
