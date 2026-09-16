@@ -26,14 +26,15 @@ jobs:
       - name: Sync, clean and push
         env:
           GH_TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
+          PERSONAL_REPO_TOKEN: ${{ secrets.PERSONAL_REPO_TOKEN }}
         run: |
           cd "$GITHUB_WORKSPACE/target-repo"
-          
+
           # Configura git
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout main 2>/dev/null || git checkout -b main
-          
+
           # Sync: copia arquivos do source (exceto .git e .github)
           rsync -av --exclude='.git' --exclude='.github' --exclude='README.md' --exclude='target-repo' "$GITHUB_WORKSPACE/" .
 
@@ -80,12 +81,16 @@ jobs:
           # Single commit with sync timestamp
           git add -A
           git commit -m "Sync: $(date '+%Y-%m-%d %H:%M:%S')" || echo "No changes to sync"
-          
+
           # Push
           echo "=== Final state ==="
           git log --oneline -5
           git status
-          
-          
+
+          # Push para repo da Thepes
           git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/thepes-technology/reply-code-finish-demo.git
           git push origin main --verbose
+
+          # Push para repo pessoal
+          git remote add personal https://x-access-token:${PERSONAL_REPO_TOKEN}@github.com/VictorHugoBatista/reply-code-finish-demo.git 2>/dev/null || true
+          git push personal main --verbose
