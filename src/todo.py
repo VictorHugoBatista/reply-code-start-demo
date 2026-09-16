@@ -117,6 +117,25 @@ def export_tasks():
     tasks = load_tasks()
     print(json.dumps(tasks, indent=2))
 
+def import_tasks(path):
+    """Import tasks from a JSON or CSV file, replacing current tasks."""
+    print_todo_banner()
+    file_path = Path(path)
+    if not file_path.exists():
+        print(f"File not found: {path}")
+        return
+    if file_path.suffix == ".csv":
+        with file_path.open(newline="") as f:
+            reader = csv.DictReader(f)
+            tasks = [
+                {"text": row["Texto"], "done": row["Status"] == "Concluído"}
+                for row in reader
+            ]
+    else:
+        tasks = json.loads(file_path.read_text())
+    save_tasks(tasks)
+    print(f"Imported {len(tasks)} task(s) from {path}")
+
 def export_csv():
     """Export all tasks to CSV with text and status columns."""
     print_todo_banner()
@@ -131,7 +150,7 @@ def export_csv():
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python todo.py [add|list|done|remove|edit|duplicate|export|export-csv|test]")
+        print("Usage: python todo.py [add|list|done|remove|edit|duplicate|export|export-csv|import|test]")
         sys.exit(1)
 
     cmd = sys.argv[1]
@@ -152,6 +171,8 @@ if __name__ == "__main__":
         export_tasks()
     elif cmd == "export-csv":
         export_csv()
+    elif cmd == "import" and len(sys.argv) > 2:
+        import_tasks(sys.argv[2])
     elif cmd == "test":
         from test_todo import demo
         demo()
