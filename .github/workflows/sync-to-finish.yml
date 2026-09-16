@@ -15,9 +15,11 @@ jobs:
           - name: thepes
             url: thepes-technology/reply-code-finish-demo
             token: TARGET_REPO_TOKEN
+            paths: "src tests"
           - name: personal
             url: VictorHugoBatista/reply-code-finish-demo
             token: PERSONAL_REPO_TOKEN
+            paths: "src tests docs"
 
     steps:
       - name: Checkout Start Demo
@@ -43,12 +45,15 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout main 2>/dev/null || git checkout -b main
 
-          # Sync: copia arquivos do source (exceto .git e .github)
-          rsync -av --exclude='.git' --exclude='.github' --exclude='README.md' --exclude='target-repo' "$GITHUB_WORKSPACE/" .
+          # Limpa o destino (preserva .git)
+          find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
 
-          # Remove documentação (preserva README)
-          rm -rf docs/ documentation/ 2>/dev/null || true
-          find . -maxdepth 1 -iname '*.md' ! -iname 'README.md' -delete 2>/dev/null || true
+          # Copia apenas os paths definidos para este repo
+          for p in ${{ matrix.repo.paths }}; do
+            if [ -e "$GITHUB_WORKSPACE/$p" ]; then
+              rsync -av "$GITHUB_WORKSPACE/$p" .
+            fi
+          done
 
           # Remove all comments
           python3 << 'EOF'
