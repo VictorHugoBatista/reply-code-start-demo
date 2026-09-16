@@ -36,15 +36,11 @@ jobs:
           
           # Sync: copia arquivos do source (exceto .git e .github)
           rsync -av --exclude='.git' --exclude='.github' --exclude='README.md' --exclude='target-repo' "$GITHUB_WORKSPACE/" .
-          
+
           # Remove documentação (preserva README)
           rm -rf docs/ documentation/ 2>/dev/null || true
           find . -maxdepth 1 -iname '*.md' ! -iname 'README.md' -delete 2>/dev/null || true
-          
-          # Commit sync
-          git add -A
-          git commit -m "Sync: $(date '+%Y-%m-%d %H:%M:%S')" || echo "No changes to sync"
-          
+
           # Remove all comments
           python3 << 'EOF'
           import re, os
@@ -81,9 +77,9 @@ jobs:
                   except: pass
           EOF
 
-          # Commit cleanup
+          # Single commit with sync timestamp
           git add -A
-          git commit -m "Remove comments" || echo "No comments to remove"
+          git commit -m "Sync: $(date '+%Y-%m-%d %H:%M:%S')" || echo "No changes to sync"
           
           # Push
           echo "=== Final state ==="
