@@ -9,24 +9,32 @@ on:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    
+    strategy:
+      matrix:
+        repo:
+          - name: thepes
+            url: thepes-technology/reply-code-finish-demo
+            token: TARGET_REPO_TOKEN
+          - name: personal
+            url: VictorHugoBatista/reply-code-finish-demo
+            token: PERSONAL_REPO_TOKEN
+
     steps:
       - name: Checkout Start Demo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - name: Clone target repo
         env:
-          GH_TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
+          GH_TOKEN: ${{ secrets[matrix.repo.token] }}
         run: |
           cd "$GITHUB_WORKSPACE"
-          gh repo clone thepes-technology/reply-code-finish-demo target-repo
-      
+          gh repo clone ${{ matrix.repo.url }} target-repo
+
       - name: Sync, clean and push
         env:
-          GH_TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
-          PERSONAL_REPO_TOKEN: ${{ secrets.PERSONAL_REPO_TOKEN }}
+          GH_TOKEN: ${{ secrets[matrix.repo.token] }}
         run: |
           cd "$GITHUB_WORKSPACE/target-repo"
 
@@ -87,10 +95,5 @@ jobs:
           git log --oneline -5
           git status
 
-          # Push para repo da Thepes
-          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/thepes-technology/reply-code-finish-demo.git
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ matrix.repo.url }}.git
           git push origin main --verbose
-
-          # Push para repo pessoal
-          git remote add personal https://x-access-token:${PERSONAL_REPO_TOKEN}@github.com/VictorHugoBatista/reply-code-finish-demo.git 2>/dev/null || true
-          git push personal main --verbose
