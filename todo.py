@@ -21,7 +21,7 @@ import json
 import sys
 from pathlib import Path
 
-TASKS_FILE = Path("todo.json")
+TASKS_FILE = Path("todo.json") # Need a file called todo.json on the project root
 
 def load_tasks():
     """Load tasks from todo.json, return empty list if file doesn't exist."""
