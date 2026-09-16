@@ -34,6 +34,11 @@ Remove a task (by index):
 python todo.py remove 0
 ```
 
+Export all tasks as JSON:
+```bash
+python todo.py export
+```
+
 Run self-check:
 ```bash
 python todo.py test
