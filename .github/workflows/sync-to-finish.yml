@@ -45,13 +45,11 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout main 2>/dev/null || git checkout -b main
 
-          # Limpa o destino (preserva .git)
-          find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
-
           # Copia apenas os paths definidos para este repo
+          # (rsync -a copia conteúdo, --delete remove apenas dentro desses paths)
           for p in ${{ matrix.repo.paths }}; do
             if [ -e "$GITHUB_WORKSPACE/$p" ]; then
-              rsync -av "$GITHUB_WORKSPACE/$p" .
+              rsync -av --delete "$GITHUB_WORKSPACE/$p" .
             fi
           done
 
