@@ -12,10 +12,10 @@ built, maintained, and evolved. What's our go to market strategy?
 business impact, or reinvent the wheel roll back strategy, and pre launch.
 
 Both the angel on my left shoulder and the devil on my right are eager
-to go to the next board meeting and say weâ€™re ditching the business
+to go to the next board meeting and say we are ditching the business
 model please advise soonest define the underlying principles that drive
 decisions and strategy for your design language turd polishing incentivize
-adoption weâ€™re starting to formalize flexible opinions around our foundations.
+adoption we are starting to formalize flexible opinions around our foundations.
 """
 import csv
 import json
