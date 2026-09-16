@@ -21,7 +21,7 @@ jobs:
           GH_TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
         run: |
           cd "$GITHUB_WORKSPACE"
-          gh repo clone VictorHugoBatista/reply-code-finish-demo target-repo
+          gh repo clone thepes-technology/reply-code-finish-demo target-repo
       
       - name: Sync, clean and push
         env:
@@ -89,5 +89,6 @@ jobs:
           git log --oneline -5
           git status
           
-          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/VictorHugoBatista/reply-code-finish-demo.git
+          
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/thepes-technology/reply-code-finish-demo.git
           git push origin main --verbose
